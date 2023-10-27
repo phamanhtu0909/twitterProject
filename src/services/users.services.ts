@@ -48,20 +48,24 @@ class UsersService {
     // const accessToken = await this.signAccessToken(user_Id)
     // const refreshToken = await this.signRefreshToken(user_Id)
     //nên viết là thì sẽ giảm thời gian chờ 2 cái này tạo ra
-    const [accessToken, refreshToken] = await this.signAccessAndRefreshToken(user_id)
+    const [access_token, refresh_token] = await this.signAccessAndRefreshToken(user_id)
     //đây cũng chính là lý do mình chọn xử lý bất đồng bộ, thay vì chọn xử lý đồng bộ
     //Promise.all giúp nó chạy bất đồng bộ, chạy song song nhau, giảm thời gian
+
     //Lưu refresh_token vào database
     //lưu lại refreshToken và collection refreshTokens mới tạo
     await databaseService.refreshTokens.insertOne(
-      new RefreshToken({ user_id: new ObjectId(user_id), token: refreshToken })
+      new RefreshToken({ user_id: new ObjectId(user_id), token: refresh_token })
     )
-    return { accessToken, refreshToken }
+    return { access_token, refresh_token }
     //ta sẽ return 2 cái này về cho client
     //thay vì return user_Id về cho client
   }
   async login(user_id: string) {
     const [access_token, refresh_token] = await this.signAccessAndRefreshToken(user_id)
+    await databaseService.refreshTokens.insertOne(
+      new RefreshToken({ user_id: new ObjectId(user_id), token: refresh_token })
+    )
     return { access_token, refresh_token }
   }
 }
