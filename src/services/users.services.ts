@@ -4,6 +4,8 @@ import { RegisterReqBody } from '~/models/requests/User.requests'
 import { hashPassword } from '~/utils/crypto'
 import { signToken } from '~/utils/jwt'
 import { TokenType } from '~/constants/enums'
+import { ObjectId } from 'mongodb'
+import RefreshToken from '~/models/schemas/RefreshToken.schema'
 
 class UsersService {
   // hàm nhận vào user_id và bỏ vào payload để tạo AccessToken
@@ -49,6 +51,11 @@ class UsersService {
     const [accessToken, refreshToken] = await this.signAccessAndRefreshToken(user_id)
     //đây cũng chính là lý do mình chọn xử lý bất đồng bộ, thay vì chọn xử lý đồng bộ
     //Promise.all giúp nó chạy bất đồng bộ, chạy song song nhau, giảm thời gian
+    //Lưu refresh_token vào database
+    //lưu lại refreshToken và collection refreshTokens mới tạo
+    await databaseService.refreshTokens.insertOne(
+      new RefreshToken({ user_id: new ObjectId(user_id), token: refreshToken })
+    )
     return { accessToken, refreshToken }
     //ta sẽ return 2 cái này về cho client
     //thay vì return user_Id về cho client
