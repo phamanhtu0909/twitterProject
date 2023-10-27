@@ -5,7 +5,7 @@
 //được truyền lên hay không
 
 import { Request, Response, NextFunction } from 'express'
-import { body, checkSchema } from 'express-validator'
+import { checkSchema } from 'express-validator'
 import { JsonWebTokenError } from 'jsonwebtoken'
 import { capitalize } from 'lodash'
 import HTTP_STATUS from '~/constants/httpStatus'
@@ -184,7 +184,7 @@ export const accessTokenValidator = validate(
               //nếu có accessToken thì mình phải verify AccessToken
               const decoded_authorization = await verifyToken({ token: accessToken })
               //lấy ra decode_authorization(payload), lưu vào req,để dùng dần
-              req.decoded_authorization = decoded_authorization
+              ;(req as Request).decoded_authorization = decoded_authorization
             } catch (error) {
               throw new ErrorWithStatus({
                 message: capitalize((error as JsonWebTokenError).message), //hàm hổ trợ việc viết hoa chữ cái đầu
@@ -199,4 +199,53 @@ export const accessTokenValidator = validate(
     ['headers']
   )
 )
-export const refreshTokenValidator = validate(checkSchema({}))
+export const refreshTokenValidator = validate(
+  checkSchema(
+    {
+      refresh_token: {
+        notEmpty: {
+          errorMessage: USERS_MESSAGES.REFRESH_TOKEN_IS_REQUIRED
+        },
+
+        custom: {
+          options: async (value: string, { req }) => {
+            //verify refresh_token để lấy decoded_refresh_token
+            try {
+              const [decoded_refresh_token, refresh_token] = await Promise.all([
+                verifyToken({ token: value }),
+                databaseService.refreshTokens.findOne({ token: value })
+              ])
+
+              //verify giá trị của refresh_token xem có hợp lệ hay không, quá trình này có thể phát sinh lỗi
+              //nếu không có lỗi thì lưu decoded_refresh_token vào req để khi nào muốn biết ai gữi req thì dùng
+              //decoded_refresh_token có dạng như sau
+              //{
+              //  user_Id: '64e3c037241604ad6184726c',
+              //  token_type: 1,
+              //  iat: 1693883172,
+              //  exp: 1702523172
+              //}
+              if (refresh_token === null) {
+                throw new ErrorWithStatus({
+                  message: USERS_MESSAGES.USER_REFRESH_TOKEN_OR_NOT_FOUND,
+                  status: HTTP_STATUS.UNAUTHORIZED
+                })
+              }
+              req.decoded_refresh_token = decoded_refresh_token
+            } catch (error) {
+              if (error instanceof JsonWebTokenError) {
+                throw new ErrorWithStatus({
+                  message: capitalize(error.message),
+                  status: HTTP_STATUS.UNAUTHORIZED
+                })
+              }
+              throw error
+            }
+            return true //nếu không có lỗi thì trả về true
+          }
+        }
+      }
+    },
+    ['body']
+  )
+)

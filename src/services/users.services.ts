@@ -6,6 +6,7 @@ import { signToken } from '~/utils/jwt'
 import { TokenType } from '~/constants/enums'
 import { ObjectId } from 'mongodb'
 import RefreshToken from '~/models/schemas/RefreshToken.schema'
+import { USERS_MESSAGES } from '~/constants/messages'
 
 class UsersService {
   // hàm nhận vào user_id và bỏ vào payload để tạo AccessToken
@@ -13,14 +14,14 @@ class UsersService {
   private signAccessToken(user_id: string) {
     return signToken({
       payload: { user_id, token_type: TokenType.AccessToken },
-      options: { expiresIn: process.env.ACCESS_TOKEN_EXPIRE_IN }
+      options: { expiresIn: process.env.ACCESS_TOKEN_EXPIRE_IN as string }
     })
   }
 
   private signRefreshToken(user_id: string) {
     return signToken({
       payload: { user_id, token_type: TokenType.RefreshToken },
-      options: { expiresIn: process.env.REFRESH_TOKEN_EXPIRE_IN }
+      options: { expiresIn: process.env.REFRESH_TOKEN_EXPIRE_IN as string }
     })
   }
   //ký asccess_token và refresh_token
@@ -67,6 +68,11 @@ class UsersService {
       new RefreshToken({ user_id: new ObjectId(user_id), token: refresh_token })
     )
     return { access_token, refresh_token }
+  }
+
+  async logout(refresh_token: string) {
+    await databaseService.refreshTokens.deleteOne({ token: refresh_token })
+    return { message: USERS_MESSAGES.USERS_LOGOUT_SUCCESS }
   }
 }
 

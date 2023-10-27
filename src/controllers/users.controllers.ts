@@ -1,11 +1,11 @@
 import { Request, Response } from 'express'
 import usersService from '~/services/users.services'
 import { ParamsDictionary } from 'express-serve-static-core'
-import { RegisterReqBody } from '~/models/requests/User.requests'
+import { LoginReqBody, LogoutReqBody, RegisterReqBody } from '~/models/requests/User.requests'
 import User from '~/models/schemas/User.schema'
 import { ObjectId } from 'mongodb'
 import { USERS_MESSAGES } from '~/constants/messages'
-export const loginController = async (req: Request, res: Response) => {
+export const loginController = async (req: Request<ParamsDictionary, any, LoginReqBody>, res: Response) => {
   //lấy user_id từ user của req
   const user = req.user as User
   const user_id = user._id as ObjectId
@@ -26,8 +26,9 @@ export const registerController = async (req: Request<ParamsDictionary, any, Reg
   })
 }
 
-export const logoutController = async (req: Request, res: Response) => {
-  res.json({
-    message: 'LOGOUT SUCCESS'
-  })
+export const logoutController = async (req: Request<ParamsDictionary, any, LogoutReqBody>, res: Response) => {
+  const { refresh_token } = req.body
+  //logout sẽ nhận vào refresh_token để tìm và xóa refresh_token đó
+  const result = await usersService.logout(refresh_token)
+  res.json(result)
 }
