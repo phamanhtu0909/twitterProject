@@ -7,5 +7,6 @@ declare module 'express' {
     user?: User // trong 1 request có thể có hoặc không có user
     decoded_authorization?: TokenPayload // trong 1 request có thể có hoặc không có decoded_athorization_token
     decoded_refresh_token?: TokenPayload // trong 1 request có thể có hoặc không có decoded_refresh_token
+    decoded_email_verify_token?: TokenPayload // trong 1 request có thể có hoặc không có decoded_email_verify_token
   }
 }
