@@ -8,5 +8,6 @@ declare module 'express' {
     decoded_authorization?: TokenPayload // trong 1 request có thể có hoặc không có decoded_athorization_token
     decoded_refresh_token?: TokenPayload // trong 1 request có thể có hoặc không có decoded_refresh_token
     decoded_email_verify_token?: TokenPayload // trong 1 request có thể có hoặc không có decoded_email_verify_token
+    decoded_forgot_password_token?: TokenPayload // trong 1 request có thể có hoặc không có decoded_forgot_password_token
   }
 }
