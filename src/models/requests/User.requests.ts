@@ -1,5 +1,6 @@
 import { JwtPayload } from 'jsonwebtoken'
 import { TokenType } from '~/constants/enums'
+import { resetPasswordController } from '~/controllers/users.controllers'
 
 export interface RegisterReqBody {
   name: string
@@ -25,4 +26,10 @@ export interface TokenPayload extends JwtPayload {
 
 export interface VerifyEmailReqBody {
   email_verify_token: string
+}
+
+export interface ResetPasswordReqBody {
+  forgot_password_token: string
+  password: string
+  confirm_password: string
 }
