@@ -10,4 +10,3 @@ export const wrapAsync = <P>(func: RequestHandler<P>) => {
     }
   }
 }
-  

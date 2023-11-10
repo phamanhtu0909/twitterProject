@@ -6,8 +6,9 @@ import mediasRouter from './routes/medias.routes'
 import { initFolder } from './utils/files'
 
 import { config } from 'dotenv'
-import { UPLOAD_DIR } from './constants/dir'
+import { UPLOAD_DIR, UPLOAD_VIDEO_DIR } from './constants/dir'
 import staticRouter from './routes/static.routes'
+import { UPLOAD_IMAGE_DIR } from './constants/dir' //import không xài xóa đi cũng đc
 config()
 
 const app = express()
@@ -25,7 +26,7 @@ app.use('/users', usersRouter)
 app.use('/medias', mediasRouter)
 // app.use('/static', express.static(UPLOAD_DIR))
 app.use('/static', staticRouter)
-
+// app.use('/static/video', express.static(UPLOAD_VIDEO_DIR))
 app.use(defaultErrorHandler)
 
 app.listen(PORT, () => {
