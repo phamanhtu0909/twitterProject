@@ -30,6 +30,12 @@ class DatabaseService {
     return this.db.collection(process.env.DB_USERS_COLLECTION as string)
   }
 
+  async indexUsers() {
+    await this.users.createIndex({ username: 1 }, { unique: true })
+    await this.users.createIndex({ email: 1 }, { unique: true })
+    await this.users.createIndex({ email: 1, password: 1 })
+  }
+
   //method này trả về 1 collection chứa các object RefreshToken
   //RefreshToken là class mà ta đã tạo trước đó
   get refreshTokens(): Collection<RefreshToken> {

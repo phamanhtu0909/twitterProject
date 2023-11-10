@@ -9,13 +9,16 @@ import { config } from 'dotenv'
 import { UPLOAD_DIR, UPLOAD_VIDEO_DIR } from './constants/dir'
 import staticRouter from './routes/static.routes'
 import { UPLOAD_IMAGE_DIR } from './constants/dir' //import không xài xóa đi cũng đc
+import { MongoClient } from 'mongodb'
 config()
 
 const app = express()
 app.use(express.json())
 const PORT = 4000
 
-databaseService.connect()
+databaseService.connect().then(() => {
+  databaseService.indexUsers()
+})
 
 app.get('/', (req, res) => {
   res.send('Hello World!')

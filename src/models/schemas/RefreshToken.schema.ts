@@ -6,6 +6,8 @@ interface RefreshTokenType {
   token: string
   created_at?: Date // k có cũng đc, khi tạo object thì ta sẽ new Date() sau
   user_id: ObjectId
+  iat: number //thêm
+  exp: number //thêm
 }
 //class dùng để tạo ra đối tượng
 //class sẽ thông qua interface
@@ -13,14 +15,19 @@ interface RefreshTokenType {
 //class này < databse < service < controller < route < app.ts < server.ts < index.ts
 
 export default class RefreshToken {
-  _id?: ObjectId //khi client gửi lên thì không cần truyền _id
+  _id?: ObjectId
   token: string
   created_at: Date
   user_id: ObjectId
-  constructor({ _id, token, created_at, user_id }: RefreshTokenType) {
+  iat: Date //thêm
+  exp: Date //thêm
+  //khi tạo mình sẽ convert từ number sang date
+  constructor({ _id, token, created_at, user_id, iat, exp }: RefreshTokenType) {
     this._id = _id
     this.token = token
     this.created_at = created_at || new Date()
     this.user_id = user_id
+    this.iat = new Date(iat * 1000) //convert từ Epoch time sang Date
+    this.exp = new Date(exp * 1000) //convert từ Epoch time sang Date
   }
 }
