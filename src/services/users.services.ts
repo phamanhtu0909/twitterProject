@@ -8,7 +8,7 @@ import { ObjectId } from 'mongodb'
 import RefreshToken from '~/models/schemas/RefreshToken.schema'
 import { USERS_MESSAGES } from '~/constants/messages'
 import { ErrorWithStatus } from '~/models/Errors'
-import HTTP_STATUS from '~/constants/httpStatus'
+import { HTTP_STATUS } from '~/constants/httpStatus'
 import { Follower } from '~/models/schemas/Followers.schema'
 import axios from 'axios'
 

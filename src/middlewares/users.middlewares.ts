@@ -4,17 +4,19 @@
 //làm 1 middleware kiểm tra xem email và password có
 //được truyền lên hay không
 
-import e, { Request, Response, NextFunction } from 'express'
-import { ParamSchema, checkSchema } from 'express-validator'
+import { verify } from 'crypto'
+import { Request, Response, NextFunction } from 'express'
+import { ParamSchema, check, checkSchema } from 'express-validator'
 import { JsonWebTokenError } from 'jsonwebtoken'
-import { capitalize } from 'lodash'
+import { capitalize, has } from 'lodash'
 import { ObjectId } from 'mongodb'
 import { UserVerifyStatus } from '~/constants/enums'
-import HTTP_STATUS from '~/constants/httpStatus'
+import { HTTP_STATUS } from '~/constants/httpStatus'
 import { USERS_MESSAGES } from '~/constants/messages'
 import { REGEX_USERNAME } from '~/constants/regex'
 import { ErrorWithStatus } from '~/models/Errors'
 import { TokenPayload } from '~/models/requests/User.requests'
+import User from '~/models/schemas/User.schema'
 import databaseService from '~/services/database.services'
 import usersService from '~/services/users.services'
 import { hashPassword } from '~/utils/crypto'
